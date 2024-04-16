@@ -10,15 +10,15 @@ await PIXI.Assets.load("tempEnemy.png");
 await PIXI.Assets.load("shipLaser.png");
 await PIXI.Assets.load("enemyLaser.png");
 
-let testEnemy = PIXI.Sprite.from("tempEnemy.png");
+// let testEnemy = PIXI.Sprite.from("tempEnemy.png");
 
-testEnemy.width = 55;
-testEnemy.height = 55;
+// testEnemy.width = 55;
+// testEnemy.height = 55;
 
-testEnemy.x = 300;
-testEnemy.y = 50;
+// testEnemy.x = 300;
+// testEnemy.y = 50;
 
-app.stage.addChild(testEnemy);
+// app.stage.addChild(testEnemy);
 
 let player = PIXI.Sprite.from("ship.png");
 
@@ -34,7 +34,18 @@ let keys = {};
 
 let enemis = {};
 
-enemis[1] = testEnemy;
+function createEnemy() {
+  let enemy = PIXI.Sprite.from("tempEnemy.png");
+
+  enemy.width = 55;
+  enemy.height = 55;
+  const randomNum = Math.floor(Math.random() * 600);
+  enemy.x = randomNum;
+  enemy.y = 50;
+
+  app.stage.addChild(enemy);
+  enemis[randomNum] = enemy;
+}
 
 function deleteLaster(child) {
   app.stage.removeChild(child);
@@ -97,18 +108,24 @@ function fireLaserEnemy() {
           if (isColliding(laserBlast, player)) {
             app.stage.removeChild(player);
           }
-
+          if (enemis[enemy]) {
+            enemis[enemy].y += 0.1;
+          }
           laserBlast.y += 10;
         });
 
         let laserInterval = setInterval(() => deleteLaster(laserBlast), 1000);
       }
     }
-    laserCooldownEnemis = 30;
+    laserCooldownEnemis = 50;
   }
 }
 
 let laserCooldown = 0;
+
+let enemySpawnerCooldown = 0;
+
+let howManyEnemies = 4;
 
 function updateMovment(keys) {
   if (keys["w"]) {
@@ -146,11 +163,26 @@ window.onkeyup = function (e) {
 
 app.ticker.add(() => {
   updateMovment(keys);
+
   fireLaserEnemy();
+
   if (laserCooldown > 0) {
     laserCooldown -= 1;
   }
   if (laserCooldownEnemis > 0) {
     laserCooldownEnemis -= 1;
+  }
+
+  if (enemySpawnerCooldown <= 0) {
+    howManyEnemies += 1;
+    let chanceOfEnemies = Math.floor(Math.random() * 10);
+    if (chanceOfEnemies >= 6) {
+      for (let i = 0; i < Math.floor(Math.random() * howManyEnemies); i++) {
+        createEnemy();
+      }
+      enemySpawnerCooldown = 200;
+    }
+  } else {
+    enemySpawnerCooldown -= 1;
   }
 });
