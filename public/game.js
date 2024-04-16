@@ -39,9 +39,12 @@ function createEnemy() {
 
   enemy.width = 55;
   enemy.height = 55;
+
   const randomNum = Math.floor(Math.random() * 600);
   enemy.x = randomNum;
   enemy.y = 50;
+
+  enemy.tint = Math.random() * 0xffffff;
 
   app.stage.addChild(enemy);
   enemis[randomNum] = enemy;
@@ -174,7 +177,7 @@ app.ticker.add(() => {
   }
 
   if (enemySpawnerCooldown <= 0) {
-    howManyEnemies += 1;
+    howManyEnemies += 0.3;
     let chanceOfEnemies = Math.floor(Math.random() * 10);
     if (chanceOfEnemies >= 6) {
       for (let i = 0; i < Math.floor(Math.random() * howManyEnemies); i++) {
