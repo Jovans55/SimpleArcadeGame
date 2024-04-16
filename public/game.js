@@ -8,6 +8,7 @@ document.body.appendChild(app.canvas);
 await PIXI.Assets.load("ship.png");
 await PIXI.Assets.load("tempEnemy.png");
 await PIXI.Assets.load("shipLaser.png");
+await PIXI.Assets.load("enemyLaser.png");
 
 let testEnemy = PIXI.Sprite.from("tempEnemy.png");
 
@@ -31,6 +32,10 @@ app.stage.addChild(player);
 
 let keys = {};
 
+let enemis = {};
+
+enemis[1] = testEnemy;
+
 function deleteLaster(child) {
   app.stage.removeChild(child);
 }
@@ -46,7 +51,7 @@ function isColliding(a, b) {
   );
 }
 
-function fireLaser() {
+function fireLaserPlayer() {
   let laserBlast = PIXI.Sprite.from("shipLaser.png");
 
   laserBlast.width = 50;
@@ -58,8 +63,11 @@ function fireLaser() {
   app.stage.addChild(laserBlast);
 
   app.ticker.add(() => {
-    if (isColliding(laserBlast, testEnemy)) {
-      app.stage.removeChild(testEnemy);
+    for (const enemy in enemis) {
+      if (isColliding(laserBlast, enemis[enemy])) {
+        app.stage.removeChild(enemis[enemy]);
+        delete enemis[enemy];
+      }
     }
 
     laserBlast.y -= 10;
@@ -68,16 +76,46 @@ function fireLaser() {
   let laserInterval = setInterval(() => deleteLaster(laserBlast), 1000);
 }
 
-let lasterCooldown = 0;
+let laserCooldownEnemis = 0;
+
+function fireLaserEnemy() {
+  if (laserCooldownEnemis <= 0) {
+    for (const enemy in enemis) {
+      const roll = Math.floor(Math.random() * 10);
+      if (roll >= 6) {
+        let laserBlast = PIXI.Sprite.from("enemyLaser.png");
+
+        laserBlast.width = 50;
+        laserBlast.height = 50;
+
+        laserBlast.x = enemis[enemy].x + 5;
+        laserBlast.y = enemis[enemy].y + 25;
+
+        app.stage.addChild(laserBlast);
+
+        app.ticker.add(() => {
+          if (isColliding(laserBlast, player)) {
+            app.stage.removeChild(player);
+          }
+
+          laserBlast.y += 10;
+        });
+
+        let laserInterval = setInterval(() => deleteLaster(laserBlast), 1000);
+      }
+    }
+    laserCooldownEnemis = 30;
+  }
+}
+
+let laserCooldown = 0;
 
 function updateMovment(keys) {
   if (keys["w"]) {
-    if (lasterCooldown > 0) {
-      console.log("cooldown");
+    if (laserCooldown > 0) {
     } else {
-      console.log("shot");
-      lasterCooldown = 10;
-      fireLaser();
+      laserCooldown = 10;
+      fireLaserPlayer();
     }
   }
   if (keys["a"]) {
@@ -108,7 +146,11 @@ window.onkeyup = function (e) {
 
 app.ticker.add(() => {
   updateMovment(keys);
-  if (lasterCooldown > 0) {
-    lasterCooldown -= 1;
+  fireLaserEnemy();
+  if (laserCooldown > 0) {
+    laserCooldown -= 1;
+  }
+  if (laserCooldownEnemis > 0) {
+    laserCooldownEnemis -= 1;
   }
 });
