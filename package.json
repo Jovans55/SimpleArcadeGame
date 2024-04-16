@@ -1,0 +1,9 @@
+{
+  "scripts":{
+    "start":"node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pixi.js": "^8.1.0"
+  }
+}
