@@ -9,13 +9,23 @@ await PIXI.Assets.load("ship.png");
 await PIXI.Assets.load("tempEnemy.png");
 await PIXI.Assets.load("shipLaser.png");
 
+let testEnemy = PIXI.Sprite.from("tempEnemy.png");
+
+testEnemy.width = 55;
+testEnemy.height = 55;
+
+testEnemy.x = 300;
+testEnemy.y = 50;
+
+app.stage.addChild(testEnemy);
+
 let player = PIXI.Sprite.from("ship.png");
 
-player.width = 150;
-player.height = 150;
+player.width = 100;
+player.height = 100;
 
 player.x = 280;
-player.y = 500;
+player.y = 550;
 
 app.stage.addChild(player);
 
@@ -28,11 +38,11 @@ function deleteLaster(child) {
 function fireLaser() {
   let laserBlast = PIXI.Sprite.from("shipLaser.png");
 
-  laserBlast.width = 100;
-  laserBlast.height = 100;
+  laserBlast.width = 50;
+  laserBlast.height = 50;
 
   laserBlast.x = player.x + 25;
-  laserBlast.y = player.y - 80;
+  laserBlast.y = player.y - 10;
 
   app.stage.addChild(laserBlast);
 
