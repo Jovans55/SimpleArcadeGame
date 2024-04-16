@@ -7,22 +7,53 @@ document.body.appendChild(app.canvas);
 
 await PIXI.Assets.load("ship.png");
 await PIXI.Assets.load("tempEnemy.png");
+await PIXI.Assets.load("shipLaser.png");
 
 let player = PIXI.Sprite.from("ship.png");
 
-player.width = 100;
-player.height = 100;
+player.width = 150;
+player.height = 150;
 
-player.x = 300;
-player.y = 550;
+player.x = 280;
+player.y = 500;
 
 app.stage.addChild(player);
 
 let keys = {};
 
+function deleteLaster(child) {
+  app.stage.removeChild(child);
+}
+
+function fireLaser() {
+  let laserBlast = PIXI.Sprite.from("shipLaser.png");
+
+  laserBlast.width = 100;
+  laserBlast.height = 100;
+
+  laserBlast.x = player.x + 25;
+  laserBlast.y = player.y - 80;
+
+  app.stage.addChild(laserBlast);
+
+  app.ticker.add(() => {
+    laserBlast.y -= 10;
+  });
+
+  let laserInterval = setInterval(() => deleteLaster(laserBlast), 1000);
+}
+
+let lasterCooldown = 0;
+
 function updateMovment(keys) {
   if (keys["w"]) {
-    console.log("shoot");
+    if (lasterCooldown > 0) {
+      console.log("cooldown");
+    } else {
+      console.log("shot");
+      lasterCooldown = 10;
+      fireLaser();
+    }
   }
   if (keys["a"]) {
     if (player.x < 10) {
@@ -32,7 +63,6 @@ function updateMovment(keys) {
     }
   }
   if (keys["d"]) {
-    console.log("HIT D", player.x);
     if (player.x >= 600) {
       player.x += 0;
     } else {
@@ -53,4 +83,7 @@ window.onkeyup = function (e) {
 
 app.ticker.add(() => {
   updateMovment(keys);
+  if (lasterCooldown > 0) {
+    lasterCooldown -= 1;
+  }
 });
