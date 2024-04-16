@@ -1,11 +1,15 @@
 * {
     background-color: #b00222ed;
-    --matchingColor: #2D9F82;
+    --matchingColor: #2D7DD2;
 }
 
 body {
     margin: 0px;
     height: 0px;
-    display: flex;
-    justify-content: center;
+    text-align: center;
+}
+
+canvas {
+    border: 12px solid var(--matchingColor);
+    border-radius: 15px;
 }
