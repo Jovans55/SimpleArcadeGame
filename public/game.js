@@ -30,6 +30,21 @@ player.y = 550;
 
 app.stage.addChild(player);
 
+let style = new PIXI.TextStyle({
+  fontFamily: "Arial",
+  fontSize: 20,
+  fill: "white",
+});
+
+let score = 0;
+
+const basicText = new PIXI.Text(`Score: ${score}`, style);
+
+basicText.x = 12;
+basicText.y = 5;
+
+app.stage.addChild(basicText);
+
 let keys = {};
 
 let enemis = {};
@@ -45,6 +60,7 @@ function createEnemy() {
   enemy.y = 50;
 
   enemy.tint = Math.random() * 0xffffff;
+  enemy.down = true;
 
   app.stage.addChild(enemy);
   enemis[randomNum] = enemy;
@@ -79,6 +95,8 @@ function fireLaserPlayer() {
   app.ticker.add(() => {
     for (const enemy in enemis) {
       if (isColliding(laserBlast, enemis[enemy])) {
+        score += 15;
+        basicText.text = `Score: ${score}`;
         app.stage.removeChild(enemis[enemy]);
         delete enemis[enemy];
       }
@@ -112,7 +130,14 @@ function fireLaserEnemy() {
             app.stage.removeChild(player);
           }
           if (enemis[enemy]) {
-            enemis[enemy].y += 0.1;
+            if (enemis[enemy].y < 450 && enemis[enemy].down) {
+              enemis[enemy].y += 0.1;
+            } else if (enemis[enemy].y > 50) {
+              enemis[enemy].down = false;
+              enemis[enemy].y -= 0.1;
+            } else {
+              enemis[enemy].down = true;
+            }
           }
           laserBlast.y += 10;
         });
