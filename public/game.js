@@ -30,20 +30,34 @@ player.y = 550;
 
 app.stage.addChild(player);
 
-let style = new PIXI.TextStyle({
+let scoreStyle = new PIXI.TextStyle({
   fontFamily: "Arial",
   fontSize: 20,
   fill: "white",
 });
 
+let livesStyle = new PIXI.TextStyle({
+  fontFamily: "Arial",
+  fontSize: 30,
+  fill: "white",
+});
+
 let score = 0;
+let lives = "♡♡♡";
 
-const basicText = new PIXI.Text(`Score: ${score}`, style);
+let playerHitTimeOut = 1000;
 
-basicText.x = 12;
-basicText.y = 5;
+const scoreText = new PIXI.Text(`Score: ${score}`, scoreStyle);
+const livesText = new PIXI.Text(lives, livesStyle);
 
-app.stage.addChild(basicText);
+scoreText.x = 12;
+scoreText.y = 5;
+
+livesText.x = 12;
+livesText.y = 27;
+
+app.stage.addChild(scoreText);
+app.stage.addChild(livesText);
 
 let keys = {};
 
@@ -96,7 +110,7 @@ function fireLaserPlayer() {
     for (const enemy in enemis) {
       if (isColliding(laserBlast, enemis[enemy])) {
         score += 15;
-        basicText.text = `Score: ${score}`;
+        scoreText.text = `Score: ${score}`;
         app.stage.removeChild(enemis[enemy]);
         delete enemis[enemy];
       }
@@ -126,8 +140,19 @@ function fireLaserEnemy() {
         app.stage.addChild(laserBlast);
 
         app.ticker.add(() => {
-          if (isColliding(laserBlast, player)) {
-            app.stage.removeChild(player);
+          if (isColliding(laserBlast, player) && playerHitTimeOut <= 0) {
+            console.log(livesText.text.length);
+            if (livesText.text.length > 0) {
+              livesText.text = livesText.text.substr(
+                0,
+                livesText.text.length - 1
+              );
+            } else {
+              app.stage.removeChild(player);
+            }
+            playerHitTimeOut = 1000;
+          } else if (isColliding(laserBlast, player)) {
+            playerHitTimeOut -= 100;
           }
           if (enemis[enemy]) {
             if (enemis[enemy].y < 450 && enemis[enemy].down) {
